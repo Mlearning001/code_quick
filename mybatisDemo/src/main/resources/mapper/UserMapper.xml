@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.UserMapper">
+
+    <resultMap id="result" type="org.example.bean.User">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="age" column="age"></result>
+        <result property="password" column="password"></result>
+        <result property="gender" column="gender"></result>
+    </resultMap>
+
+    <resultMap id="empAndDeptResultMapOne" type="org.example.bean.Emp1">
+        <id property="eid" column="eid"></id>
+        <result property="empName" column="emp_name"></result>
+        <result property="age" column="age"></result>
+        <result property="sex" column="sex"></result>
+        <result property="email" column="email"></result>
+        <result property="user.gender" column="gender"></result>
+        <result property="user.id" column="id"></result>
+    </resultMap>
+
+    <resultMap id="empAndDeptResultMapTwo" type="org.example.bean.Emp1">
+        <id property="eid" column="eid"></id>
+        <result property="empName" column="emp_name"></result>
+        <result property="age" column="age"></result>
+        <result property="sex" column="sex"></result>
+        <result property="email" column="email"></result>
+        <association property="user" javaType="org.example.bean.User">
+            <id property="id" column="id"></id>
+            <result property="gender" column="gender"></result>
+            <result property="password" column="password"></result>
+        </association>
+    </resultMap>
+
+    <resultMap id="DeptAndEmpResultMap" type="org.example.bean.Emp2">
+        <id property="eid" column="eid"></id>
+        <result property="empName" column="empName"></result>
+        <collection property="userList" ofType="org.example.bean.User">
+            <id property="id" column="id"></id>
+            <result property="name" column="name"></result>
+            <result property="age" column="age"></result>
+            <result property="password" column="password"></result>
+            <result property="userId" column="user_id"></result>
+        </collection>
+    </resultMap>
+
+    <sql id="empColumns">eid,empName,age,sex,email</sql>
+
+    <select id="getEmpAndDept" resultMap="empAndDeptResultMapOne">
+        select * from t_emp left join t_user on t_emp.eid = t_user.id where t_user.id = #{t_id}
+    </select>
+
+    <!--int insertUser();-->
+    <delete id="deleteUser">
+        delete from t_user where id = 6
+    </delete>
+
+    <insert id="insertUser">
+        insert into t_user values(#{name},#{password},#{age},#{gender})
+    </insert>
+
+    <!--int updateUser();-->
+    <update id="updateUser">
+        update t_user set username = '张三' where id = 5
+    </update>
+
+    <!--User getUserById();-->
+    <select id="getUserById" resultType="org.example.bean.User">
+        select * from t_user where id = 2
+    </select>
+
+    <!--List<User> getUserList();-->
+    <select id="getUserList" resultType="org.example.bean.User">
+        select * from t_user
+    </select>
+
+    <!--User getUserByUsername(String username);-->
+    <select id="getUserByUserName" resultType="org.example.bean.User">
+        select * from t_user where name = #{username}
+    </select>
+
+    <!--User checkLogin(String username,String password)-->
+    <select id="checkLogin" resultType="org.example.bean.User">
+        select * from t_user where name = #{arg0} and password = #{arg1}
+    </select>
+
+    <!--User checkLoginByMap(Map<String,Object> map)-->
+    <select id="checkLoginByMap" resultType="org.example.bean.User">
+        select * from t_user where name = #{username} and password = #{password}
+    </select>
+
+    <select id="checkLoginByParam" resultType="org.example.bean.User">
+        select * from t_user where name = #{name} and password = #{password}
+    </select>
+
+    <insert id="insertUser1">
+        insert into t_user values(#{id},#{name},#{password},#{age},#{gender})
+    </insert>
+
+    <select id="getUserList2" resultType="org.example.bean.User">
+        select * from t_user
+    </select>
+
+    <select id="getUserToMap" resultType="map">
+        select * from t_user
+    </select>
+
+    <select id="getUserByLike" resultMap="result">
+    select * from t_user where name like "%"#{name}"%"
+    </select>
+
+    <delete id="deleteMore">
+        delete from t_user where id in (${ids})
+    </delete>
+
+    <select id="getUserByTable" resultType="org.example.bean.User">
+        select * from ${tabName}
+    </select>
+
+    <insert id="insertUser2" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user values(null,#{name},#{password},#{age},#{gender})
+    </insert>
+
+    <select id="getEmpAndUser" resultMap="empAndDeptResultMapTwo">
+        select * from t_emp join t_user on t_emp.eid = t_user.id where t_user.id = #{t_id}
+    </select>
+
+    <select id="getEmpAndUserList" resultMap="DeptAndEmpResultMap">
+        select * from t_emp inner join t_user on t_emp.eid = t_user.user_id where t_user.user_id = #{t_id}
+    </select>
+
+    <select id="getByCondition" resultType="org.example.bean.Emp2">
+        select * from t_emp
+        <where>
+            <choose>
+                <when test="empName != null and empName != ''">
+                    emp_name = #{empName}
+                </when>
+                <when test="age != null and age != ''">
+                    age = #{age}
+                </when>
+                <when test="sex != null and sex != ''">
+                    sex = #{sex}
+                </when>
+                <when test="email != null and email != ''">
+                    email = #{email}
+                </when>
+                <otherwise>
+                    did = 1
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <delete id="deleteByArray">
+        delete from t_user where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <insert id="insertMoreByList">
+        insert into t_emp values
+        <foreach collection="emps" item="emp" separator=",">
+            (null,#{emp.empName},#{emp.sex},#{emp.email},#{emp.age})
+        </foreach>
+    </insert>
+
+    <!--List<Emp> getEmpByCondition(Emp emp);-->
+    <select id="getEmpByCondition" resultType="org.example.bean.Emp2">
+        select <include refid="empColumns"></include> from t_emp
+    </select>
+
+
+
+
+</mapper>
