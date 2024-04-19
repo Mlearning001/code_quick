@@ -82,6 +82,7 @@ public class UserMapperTest {
         System.out.println(user);
     }
 
+
     @Test
     public void getUserList() throws IOException {
         SqlSession sqlSession = SqlSessionUtils.getSqlSession();
