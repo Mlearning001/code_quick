@@ -1,17 +1,37 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import com.github.pagehelper.util.StringUtil;
+
+import java.util.*;
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        int i = lengthOfLongestSubstring(" ");
+        System.out.println(i);
+    }
+    public static int lengthOfLongestSubstring(String s) {
+        Set<Character> strSet = new HashSet<>();
+        int maxLength = 0;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = i; j <= s.length(); j++) {
+                if (j == s.length()){
+                    if (j -i>maxLength){
+                        maxLength = j-i;
+                    }
+                    break;
+                }
+                if (!strSet.contains(s.charAt(j))){
+                    strSet.add(s.charAt(j));
+                } else {
+                    if (j - i > maxLength){
+                        maxLength = j -i;
+                    }
+                    // 因为是有序出现的，那么不用清空全部，只需要把第一个清空，第二个添加就好了
+                    strSet.clear();
+                    break;
+                }
+            }
         }
+        return maxLength;
     }
 }
