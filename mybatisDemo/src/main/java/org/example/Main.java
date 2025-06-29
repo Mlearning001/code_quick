@@ -34,4 +34,32 @@ public class Main {
         }
         return maxLength;
     }
+
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String,List<String>> resMap = new HashMap<>();
+        for (String str : strs) {
+            String sortStr = sortStr(str);
+            if (resMap.containsKey(sortStr)){
+                resMap.get(sortStr).add(str);
+            }else {
+                List<String> list = new ArrayList<>();
+                list.add(str);
+                resMap.put(sortStr,list);
+            }
+        }
+        return new ArrayList<>(resMap.values());
+    }
+
+    /**
+     * 将这个str中的字母从小到大重新排列进行排序
+     * @param str
+     * @return
+     */
+    private String sortStr(String str){
+        char[] charArray = str.toCharArray();
+        Arrays.sort(charArray);
+        return new String(charArray);
+    }
+
+
 }
